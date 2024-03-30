@@ -40,15 +40,77 @@
         
     }
 
+    // create element of list
+    function createTodoItem(name) {
+        let item = document.createElement('li');
+        // buttons should be in an element, that makes their beautiful and shows in one group
+        let buttonGroup = document.createElement('div');
+        let doneButton = document.createElement('button');
+        let deleteButton = document.createElement('button'); 
+
+        // set styles for elements
+        item.classList.add('list-group-item', 'd-flex', 'justify-content-between', 'align-items-center');
+        item.textContent = name;
+        
+        buttonGroup.classList.add('btn-group', 'btn-group-sm');
+        doneButton.classList.add('btn', 'btn-success');
+        doneButton.textContent = 'Done';
+        deleteButton.classList.add('btn', 'btn-danger');
+        deleteButton.textContent = 'Delete';
+
+        // put buttons in separate element
+        buttonGroup.append(doneButton);
+        buttonGroup.append(deleteButton);
+        item.append(buttonGroup);
+
+        return {
+            item,
+            doneButton,
+            deleteButton,
+        };
+
+    }
+
     document.addEventListener('DOMContentLoaded', function() {
         let container = document.getElementById('todo-app');
 
         let todoAppTitle = createAppTitle('Todo list');
         let todoItemForm = createTodoItemForm();
         let todoList = createTodoList();
-
+        
         container.append(todoAppTitle);
         container.append(todoItemForm.form);
         container.append(todoList);
+        
+        todoItemForm.form.addEventListener('submit', function(e) {
+            // cancel refresh of browser
+            e.preventDefault();
+            
+            // if nothing to add
+            if (!todoItemForm.input.value) {
+                return;
+            }
+
+            let todoItem = createTodoItem(todoItemForm.input.value);
+            
+            // add a handler to the buttons
+            todoItem.doneButton.addEventListener('click', function() {
+                todoItem.item.classList.toggle('list-group-item-success');
+            });
+
+            todoItem.deleteButton.addEventListener('click', function() {
+                if (confirm('Are you sure?')) {
+                    todoItem.item.remove();
+                }
+            });
+
+            // create and add new task from field
+            todoList.append(todoItem.item);
+
+            // clear value in the field
+            todoItemForm.input.value = '';
+        });
     });
 })();
+
+
