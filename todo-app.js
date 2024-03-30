@@ -71,10 +71,8 @@
 
     }
 
-    document.addEventListener('DOMContentLoaded', function() {
-        let container = document.getElementById('todo-app');
-
-        let todoAppTitle = createAppTitle('Todo list');
+    function createTodoApp(container, title = 'Todo list') {
+        let todoAppTitle = createAppTitle(title);
         let todoItemForm = createTodoItemForm();
         let todoList = createTodoList();
         
@@ -110,7 +108,9 @@
             // clear value in the field
             todoItemForm.input.value = '';
         });
-    });
+    }
+
+    window.createTodoApp = createTodoApp;
 })();
 
 
