@@ -104,10 +104,17 @@
 
             // create and add new task from field
             todoList.append(todoItem.item);
-
             // clear value in the field
             todoItemForm.input.value = '';
+
+            todoItemForm.button.disabled = true; // Making the button unavailable after submitting the form
         });
+
+        todoItemForm.input.addEventListener('input', function() {
+            todoItemForm.button.disabled = todoItemForm.input.value === ''; // Enable/disable the button depending on the contents of the field
+        });
+    
+        todoItemForm.input.dispatchEvent(new Event('input')); // Call the input event when the page loads
     }
 
     window.createTodoApp = createTodoApp;
