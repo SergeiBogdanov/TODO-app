@@ -71,7 +71,7 @@
 
     }
 
-    function createTodoApp(container, title = 'Todo list') {
+    function createTodoApp(container, title = 'Todo list', initialTodos = [] ) {
         let todoAppTitle = createAppTitle(title);
         let todoItemForm = createTodoItemForm();
         let todoList = createTodoList();
@@ -79,6 +79,16 @@
         container.append(todoAppTitle);
         container.append(todoItemForm.form);
         container.append(todoList);
+
+        if (initialTodos && initialTodos.length > 0) {
+            initialTodos.forEach(todo => {
+                let todoItem = createTodoItem(todo.name);
+                if (todo.done) {
+                    todoItem.item.classList.add('list-group-item-success');
+                }
+                todoList.append(todoItem.item);
+            });
+        }
         
         todoItemForm.form.addEventListener('submit', function(e) {
             // cancel refresh of browser
@@ -89,7 +99,9 @@
                 return;
             }
 
-            let todoItem = createTodoItem(todoItemForm.input.value);
+            let todo = { name: todoItemForm.input.value, done: false };
+            let todoItem = createTodoItem(todo.name);
+            
             
             // add a handler to the buttons
             todoItem.doneButton.addEventListener('click', function() {
