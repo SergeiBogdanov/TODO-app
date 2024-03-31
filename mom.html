@@ -12,13 +12,7 @@
         <script defer src="./todo-app.js"></script>
         <script>
             document.addEventListener('DOMContentLoaded', function() {
-                let initialTodos = [
-                    { name: 'Task 1', done: false },
-                    { name: 'Task 2', done: false },
-                    { name: 'Task 3', done: true }
-                ];
-
-                createTodoApp(document.getElementById('todo-app'), 'Mom\'s tasks', initialTodos);
+                createTodoApp(document.getElementById('todo-app'), 'Mom\'s tasks', 'todoList_mom');
             });
         </script>
     </head>

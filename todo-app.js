@@ -71,7 +71,22 @@
 
     }
 
-    function createTodoApp(container, title = 'Todo list', initialTodos = [] ) {
+    function createTodoApp(container, title = 'Todo list', localStorageKey = 'todoList' ) {
+        // Function to load data from localStorage
+        function loadFromLocalStorage() {
+            const storedData = localStorage.getItem(localStorageKey);
+            if (storedData) {
+                return JSON.parse(storedData);
+            } else {
+                return [];
+            }
+    }
+
+        // Function for saving data in localStorage
+        function saveToLocalStorage(data) {
+            localStorage.setItem(localStorageKey, JSON.stringify(data));
+        }
+        
         let todoAppTitle = createAppTitle(title);
         let todoItemForm = createTodoItemForm();
         let todoList = createTodoList();
@@ -80,16 +95,15 @@
         container.append(todoItemForm.form);
         container.append(todoList);
 
-        if (initialTodos && initialTodos.length > 0) {
-            initialTodos.forEach(todo => {
-                let todoItem = createTodoItem(todo.name);
-                if (todo.done) {
-                    todoItem.item.classList.add('list-group-item-success');
-                }
-                todoList.append(todoItem.item);
-            });
-        }
-        
+        let todoItems = loadFromLocalStorage();
+        todoItems.forEach(todo => {
+            let todoItem = createTodoItem(todo.name);
+            if (todo.done) {
+                todoItem.item.classList.add('list-group-item-success');
+            }
+            todoList.append(todoItem.item);
+        });
+
         todoItemForm.form.addEventListener('submit', function(e) {
             // cancel refresh of browser
             e.preventDefault();
@@ -99,18 +113,24 @@
                 return;
             }
 
-            let todo = { name: todoItemForm.input.value, done: false };
-            let todoItem = createTodoItem(todo.name);
-            
+            let todoItem = createTodoItem(todoItemForm.input.value);
             
             // add a handler to the buttons
             todoItem.doneButton.addEventListener('click', function() {
                 todoItem.item.classList.toggle('list-group-item-success');
+                todoItems.forEach(item => {
+                    if (item.name === todoItem.item.textContent) {
+                        item.done = !item.done;
+                    }
+                });
+                saveToLocalStorage(todoItems);
             });
 
             todoItem.deleteButton.addEventListener('click', function() {
                 if (confirm('Are you sure?')) {
                     todoItem.item.remove();
+                    todoItems = todoItems.filter(item => item.name !== todoItem.item.textContent);
+                    saveToLocalStorage(todoItems);
                 }
             });
 
@@ -120,6 +140,10 @@
             todoItemForm.input.value = '';
 
             todoItemForm.button.disabled = true; // Making the button unavailable after submitting the form
+
+            // Saving data to localStorage when changing the to-do list
+            todoItems.push({ name: todoItem.item.textContent, done: false });
+            saveToLocalStorage(todoItems);
         });
 
         todoItemForm.input.addEventListener('input', function() {
