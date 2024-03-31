@@ -96,12 +96,30 @@
         container.append(todoList);
 
         let todoItems = loadFromLocalStorage();
+
+        function createButtonEventListeners(todoItem, todo) {
+            todoItem.doneButton.addEventListener('click', function () {
+                todoItem.item.classList.toggle('list-group-item-success');
+                todo.done = !todo.done; // Update the 'done' property
+                saveToLocalStorage(todoItems); // Save changes to localStorage
+            });
+    
+            todoItem.deleteButton.addEventListener('click', function () {
+                if (confirm('Are you sure?')) {
+                    todoItem.item.remove();
+                    todoItems = todoItems.filter(item => item.name !== todo.name); // Remove the task from the array
+                    saveToLocalStorage(todoItems); // Save changes to localStorage
+                }
+            });
+        }
+
         todoItems.forEach(todo => {
             let todoItem = createTodoItem(todo.name);
             if (todo.done) {
                 todoItem.item.classList.add('list-group-item-success');
             }
             todoList.append(todoItem.item);
+            createButtonEventListeners(todoItem, todo); // Add event listeners for "Done" and "Delete" buttons
         });
 
         todoItemForm.form.addEventListener('submit', function(e) {
@@ -115,25 +133,6 @@
 
             let todoItem = createTodoItem(todoItemForm.input.value);
             
-            // add a handler to the buttons
-            todoItem.doneButton.addEventListener('click', function() {
-                todoItem.item.classList.toggle('list-group-item-success');
-                todoItems.forEach(item => {
-                    if (item.name === todoItem.item.textContent) {
-                        item.done = !item.done;
-                    }
-                });
-                saveToLocalStorage(todoItems);
-            });
-
-            todoItem.deleteButton.addEventListener('click', function() {
-                if (confirm('Are you sure?')) {
-                    todoItem.item.remove();
-                    todoItems = todoItems.filter(item => item.name !== todoItem.item.textContent);
-                    saveToLocalStorage(todoItems);
-                }
-            });
-
             // create and add new task from field
             todoList.append(todoItem.item);
             // clear value in the field
@@ -142,7 +141,9 @@
             todoItemForm.button.disabled = true; // Making the button unavailable after submitting the form
 
             // Saving data to localStorage when changing the to-do list
-            todoItems.push({ name: todoItem.item.textContent, done: false });
+            let todo = { name: todoItem.item.textContent, done: false };
+            todoItems.push(todo);
+            createButtonEventListeners(todoItem, todo); // Add event listeners for "Done" and "Delete" buttons
             saveToLocalStorage(todoItems);
         });
 
